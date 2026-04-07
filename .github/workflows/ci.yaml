@@ -68,7 +68,7 @@ jobs:
       run: |
         uv venv --clear
         source .venv/bin/activate
-        uv pip install numpy pytest
+        uv pip install pip numpy pytest
     - name: Clone and build LAMMPS
       run: |
         source .venv/bin/activate

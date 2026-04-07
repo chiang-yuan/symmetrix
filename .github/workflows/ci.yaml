@@ -93,8 +93,7 @@ jobs:
             -D SYMMETRIX_KOKKOS=ON \
             cmake
         cmake --build build -j 2
-        cd build
-        make install-python
+        cmake --build build --target install-python
     - name: Run tests
       run: |
         source .venv/bin/activate

@@ -1,18 +1,15 @@
 import numpy as np
-import os
 from pytest import approx, raises
 from scipy.interpolate import CubicSpline
-import sys
 
 import symmetrix
 
 
 def test_evaluate():
-
     # generate data
     r_cut = 5
     r, h = np.linspace(0, r_cut, 20, retstep=True)
-    f = np.sin(r) * r**2 * (r_cut-r)**2
+    f = np.sin(r) * r**2 * (r_cut - r) ** 2
     # create splines
     scipy_spl = CubicSpline(r, f)
     d = scipy_spl.derivative()(r)
@@ -32,11 +29,10 @@ def test_evaluate():
 
 
 def test_evaluate_deriv():
-
     # generate data
     r_cut = 5
     r, h = np.linspace(0, r_cut, 20, retstep=True)
-    f = np.sin(r) * r**2 * (r_cut-r)**2
+    f = np.sin(r) * r**2 * (r_cut - r) ** 2
     # create splines
     scipy_spl = CubicSpline(r, f)
     d = scipy_spl.derivative()(r)
@@ -50,12 +46,12 @@ def test_evaluate_deriv():
     assert f2 == approx(scipy_spl(r2))
     assert d2 == approx(scipy_spl.derivative()(r2))
 
-def test_evaluate_deriv_divided():
 
+def test_evaluate_deriv_divided():
     # generate data
     r_cut = 5
     r, h = np.linspace(0, r_cut, 20, retstep=True)
-    f = np.sin(r) * r**2 * (r_cut-r)**2
+    f = np.sin(r) * r**2 * (r_cut - r) ** 2
     # create splines
     scipy_spl = CubicSpline(r, f)
     d = scipy_spl.derivative()(r)

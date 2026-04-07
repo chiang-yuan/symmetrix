@@ -29,3 +29,10 @@ test = [
 
 [project.scripts]
 symmetrix_extract_mace = "symmetrix.mace.cli:main"
+
+[tool.ruff]
+lint.ignore = ["E741"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F403", "E402"]
+"test_*.py" = ["F811"]

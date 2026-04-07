@@ -23,14 +23,22 @@ jobs:
         submodules: recursive
     - name: Install dependencies
       run: |
-        sudo apt-get install -y build-essential cmake git libblas-dev liblapack-dev
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake git libblas-dev liblapack-dev ninja-build
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
       with:
         python-version: '3.12'
+    - name: Cache build directory
+      uses: actions/cache@v4
+      with:
+        path: symmetrix/build
+        key: ${{ runner.os }}-symmetrix-build-${{ hashFiles('symmetrix/CMakeLists.txt', 'symmetrix/src/cpp/**') }}
+        restore-keys: |
+          ${{ runner.os }}-symmetrix-build-
     - name: Create python venv and install
       run: |
-        uv venv
+        uv venv --clear
         source .venv/bin/activate
         uv pip install ./symmetrix[test]
     - name: Run tests
@@ -50,14 +58,15 @@ jobs:
         submodules: recursive
     - name: Install dependencies
       run: |
-        sudo apt-get install -y build-essential cmake git libfftw3-dev libopenmpi-dev mpi-default-bin mpi-default-dev libblas-dev liblapack-dev
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake git libfftw3-dev libopenmpi-dev mpi-default-bin mpi-default-dev libblas-dev liblapack-dev ninja-build
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
       with:
         python-version: '3.12'
     - name: Create python venv and install
       run: |
-        uv venv
+        uv venv --clear
         source .venv/bin/activate
         uv pip install numpy pytest
     - name: Clone and build LAMMPS
@@ -69,6 +78,7 @@ jobs:
         ./install.sh ../lammps
         cd ../lammps
         cmake \
+            -G Ninja \
             -B build \
             -D CMAKE_BUILD_TYPE=Release \
             -D CMAKE_CXX_STANDARD=20 \
@@ -104,24 +114,25 @@ jobs:
         submodules: recursive
     - name: Install dependencies
       run: |
-        sudo apt-get install -y build-essential cmake git libblas-dev liblapack-dev
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake git libblas-dev liblapack-dev ninja-build
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
       with:
         python-version: '3.12'
     - name: Create python venv and install
       run: |
-        uv venv
+        uv venv --clear
         source .venv/bin/activate
         uv pip install ${{ matrix.mace-torch }} ./symmetrix
     - name: Test model extraction
       run: |
         source .venv/bin/activate
         # check for valid symmetrix json from atomic numbers and default filename
-        wget https://github.com/ACEsuit/mace-off/raw/refs/heads/main/mace_off23/MACE-OFF23_small.model 
+        wget https://github.com/ACEsuit/mace-off/raw/refs/heads/main/mace_off23/MACE-OFF23_small.model
         symmetrix_extract_mace --model MACE-OFF23_small.model --atomic-numbers 1 8
         python3 -c "from symmetrix import Symmetrix; calc = Symmetrix('MACE-OFF23_small-1-8.json', species=[1, 8])"
         # check for valid symmetrix json from checmical symbols and specified filename
-        wget https://github.com/ACEsuit/mace-off/raw/refs/heads/main/mace_off23/MACE-OFF23_medium.model 
+        wget https://github.com/ACEsuit/mace-off/raw/refs/heads/main/mace_off23/MACE-OFF23_medium.model
         symmetrix_extract_mace --model MACE-OFF23_medium.model --chemical-symbols H O -o extract_test.json
         python3 -c "from symmetrix import Symmetrix; calc = Symmetrix('extract_test.json', species=[1, 8])"

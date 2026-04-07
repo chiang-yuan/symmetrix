@@ -12,8 +12,6 @@ from mace.tools.scripts_utils import remove_pt_head
 
 from ase.data import chemical_symbols
 
-torch.serialization.add_safe_globals([slice])
-
 
 def extract_mace_data(model_path, species, head=None, num_spline_points=256):
     """Extract data from pytorch model file into structure that can be

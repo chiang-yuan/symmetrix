@@ -41,13 +41,13 @@ void bind_mace(py::module_ &m)
                            py::array_t<double> xyz,
                            py::array_t<double> r) {
                 self.compute_node_energies_forces(
-                           num_nodes, 
-                           std::span<const int>(node_types.data(), node_types.size()),
-                           std::span<const int>(num_neigh.data(), num_neigh.size()),
-                           std::span<const int>(neigh_indices.data(), neigh_indices.size()),
-                           std::span<const int>(neigh_types.data(), neigh_types.size()),
-                           std::span<const double>(xyz.data(), xyz.size()),
-                           std::span<const double>(r.data(), r.size()));
+                    num_nodes, 
+                    std::span<const int>(node_types.data(), node_types.size()),
+                    std::span<const int>(num_neigh.data(), num_neigh.size()),
+                    std::span<const int>(neigh_indices.data(), neigh_indices.size()),
+                    std::span<const int>(neigh_types.data(), neigh_types.size()),
+                    std::span<const double>(xyz.data(), xyz.size()),
+                    std::span<const double>(r.data(), r.size()));
             })
         .def("compute_R0",
             [] (MACE& self,

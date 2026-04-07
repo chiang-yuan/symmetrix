@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 
-from ..extract_mace_data import extract_mace_data 
+from .extractor import extract_mace_data
 
 def main():
     parser = ArgumentParser()

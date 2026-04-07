@@ -39,31 +39,31 @@ add_subdirectory(../libsymmetrix ${CMAKE_CURRENT_BINARY_DIR}/libsymmetrix)
 add_subdirectory(external/pybind11)
 
 set(SYMMETRIX_BINDINGS
-    source/cpp/cubic_spline.cpp
-    source/cpp/cubic_spline_set.cpp
-    source/cpp/mace.cpp
-    source/cpp/multilayer_perceptron.cpp
-    source/cpp/multivariate_polynomial.cpp
-    source/cpp/spherical_harmonic.cpp
-    source/cpp/tools.cpp
-    source/cpp/zbl.cpp)
+    src/cpp/cubic_spline.cpp
+    src/cpp/cubic_spline_set.cpp
+    src/cpp/mace.cpp
+    src/cpp/multilayer_perceptron.cpp
+    src/cpp/multivariate_polynomial.cpp
+    src/cpp/spherical_harmonic.cpp
+    src/cpp/tools.cpp
+    src/cpp/zbl.cpp)
 
 set(SYMMETRIX_BINDINGS_KOKKOS
-    source/cpp/cubic_spline_kokkos.cpp
-    source/cpp/cubic_spline_set_kokkos.cpp
-    source/cpp/mace_kokkos.cpp
-    source/cpp/multilayer_perceptron_kokkos.cpp
-    source/cpp/multivariate_polynomial_kokkos.cpp
-    # source/spherical_harmonic_kokkos.cpp
-    source/cpp/tools_kokkos.cpp
-    source/cpp/zbl_kokkos.cpp)
+    src/cpp/cubic_spline_kokkos.cpp
+    src/cpp/cubic_spline_set_kokkos.cpp
+    src/cpp/mace_kokkos.cpp
+    src/cpp/multilayer_perceptron_kokkos.cpp
+    src/cpp/multivariate_polynomial_kokkos.cpp
+    # src/spherical_harmonic_kokkos.cpp
+    src/cpp/tools_kokkos.cpp
+    src/cpp/zbl_kokkos.cpp)
 
 if(SYMMETRIX_KOKKOS)
     message(STATUS "Symmetrix will have Kokkos support.")
     list(APPEND SYMMETRIX_BINDINGS ${SYMMETRIX_BINDINGS_KOKKOS})
 endif()
 
-pybind11_add_module(symmetrix_bindings MODULE ${SYMMETRIX_BINDINGS} source/cpp/symmetrix.cpp)
+pybind11_add_module(symmetrix_bindings MODULE ${SYMMETRIX_BINDINGS} src/cpp/symmetrix.cpp)
 set_target_properties(symmetrix_bindings PROPERTIES OUTPUT_NAME symmetrix)
 target_link_libraries(symmetrix_bindings PRIVATE symmetrix)
 if(SYMMETRIX_KOKKOS)

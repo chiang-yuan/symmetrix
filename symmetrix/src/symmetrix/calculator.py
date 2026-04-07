@@ -55,7 +55,7 @@ class Symmetrix(Calculator):
             self.evaluator = MACE(str(model_file))
         except RuntimeError: # expecting json.exception.parse_error.101
             # import this here so that torch/mace support isn't needed if file is already symmetrix json
-            from .extract_mace_data import extract_mace_data
+            from .mace.extractor import extract_mace_data
             kwargs_extract = {k: v for k, v in kwargs.items()
                 if k in ['species',
                          'head',
@@ -92,9 +92,8 @@ class Symmetrix(Calculator):
         # atom forces from pair_forces
         N_atoms = len(self.atoms)
         atom_forces = np.zeros((N_atoms, 3))
-        atom_forces[:, 0] = np.bincount(j_list, weights=pair_forces[:, 0], minlength=N_atoms) - np.bincount(i_list, weights=pair_forces[:, 0], minlength=N_atoms)
-        atom_forces[:, 1] = np.bincount(j_list, weights=pair_forces[:, 1], minlength=N_atoms) - np.bincount(i_list, weights=pair_forces[:, 1], minlength=N_atoms)
-        atom_forces[:, 2] = np.bincount(j_list, weights=pair_forces[:, 2], minlength=N_atoms) - np.bincount(i_list, weights=pair_forces[:, 2], minlength=N_atoms)
+        for k in range(3):
+            atom_forces[:, k] = np.bincount(j_list, weights=pair_forces[:, k], minlength=N_atoms) - np.bincount(i_list, weights=pair_forces[:, k], minlength=N_atoms)
 
         self.results['forces'] = atom_forces
 

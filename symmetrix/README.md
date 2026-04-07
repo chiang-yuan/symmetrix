@@ -47,5 +47,5 @@ One can import the ASE calculator with
 ```
 from symmetrix import Symmetrix
 ```
-See [the source code](source/symmetrix/symmetrix_calc.py) and [this test](test/test_symmetrix_calc.py)
+See [the source code](src/symmetrix/calculator.py) and [this test](test/test_symmetrix_calc.py)
 for additional details.

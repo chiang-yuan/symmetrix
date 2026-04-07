@@ -15,6 +15,41 @@ See the `symmetrix` [README](symmetrix/README.md) to build and use the Python pa
 
 See the `pair_symmetrix` [README](pair_symmetrix/README.md) for use from LAMMPS.
 
+### Development Setup
+
+We use `uv` for package management and `pre-commit` for code formatting and linting.
+
+#### Using `uv`
+
+You can use `uv` to create a virtual environment and install Python dependencies:
+
+```bash
+# Create a venv at repo root
+uv venv
+
+# Activate it
+source .venv/bin/activate
+
+# Install the Python package in editable mode with test dependencies
+uv pip install -e ./symmetrix[test]
+```
+
+#### Using `pre-commit`
+
+We use `pre-commit` with `ruff` and `clang-format` to maintain code quality for both **Python** and **C++** code.
+
+You do not need to install `clang-format` or `ruff` on your system; `pre-commit` will download and run them automatically in isolated environments.
+
+You can run `pre-commit` using `uvx` without installing it in your environment:
+
+```bash
+# Install the Git hooks
+uvx pre-commit install
+
+# Run on all files manually
+uvx pre-commit run --all-files
+```
+
 ### Citing Symmetrix
 
 The earliest `symmetrix` results are reported in:

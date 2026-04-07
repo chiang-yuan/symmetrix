@@ -4,6 +4,16 @@ on: [pull_request, workflow_dispatch]
 
 jobs:
 
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone repo
+      uses: actions/checkout@v4
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
+    - name: Run pre-commit
+      run: uvx pre-commit run --all-files
+
   symmetrix:
     runs-on: ubuntu-latest
     steps:
@@ -14,31 +24,22 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install -y build-essential cmake git libblas-dev liblapack-dev
-    - name: Set up python
-      uses: actions/setup-python@v5
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
       with:
         python-version: '3.12'
-    - name: Create python venv
+    - name: Create python venv and install
       run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install ase cmake-build-extension[all] numpy pytest setuptools scipy wheel cmake-build-extension[all]
-        deactivate
-    - name: Build and package symmetrix
-      run: |
-        source venv/bin/activate
-        cd symmetrix
-        pip install .
-        cd ..
-        deactivate
+        uv venv
+        source .venv/bin/activate
+        uv pip install ./symmetrix[test]
     - name: Run tests
       run: |
-        source venv/bin/activate
+        source .venv/bin/activate
         python -c "import symmetrix; print(symmetrix.__version__)"
         cd symmetrix/test
         pytest
         deactivate
-        cd ../..
 
   pair_symmetrix:
     runs-on: ubuntu-latest
@@ -50,19 +51,18 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install -y build-essential cmake git libfftw3-dev libopenmpi-dev mpi-default-bin mpi-default-dev libblas-dev liblapack-dev
-    - name: Set up python
-      uses: actions/setup-python@v5
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
       with:
         python-version: '3.12'
-    - name: Create python venv
+    - name: Create python venv and install
       run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install numpy pytest
-        deactivate
+        uv venv
+        source .venv/bin/activate
+        uv pip install numpy pytest
     - name: Clone and build LAMMPS
       run: |
-        source venv/bin/activate
+        source .venv/bin/activate
         git clone -b release --depth 1 https://github.com/lammps/lammps.git
         cd pair_symmetrix
         chmod +x install.sh
@@ -85,10 +85,9 @@ jobs:
         cmake --build build -j 2
         cd build
         make install-python
-        cd ../../..
     - name: Run tests
       run: |
-        source venv/bin/activate
+        source .venv/bin/activate
         cd pair_symmetrix/test/
         python -m pytest
 
@@ -106,27 +105,18 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install -y build-essential cmake git libblas-dev liblapack-dev
-    - name: Set up python
-      uses: actions/setup-python@v5
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
       with:
         python-version: '3.12'
-    - name: Create python venv
+    - name: Create python venv and install
       run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install ${{ matrix.mace-torch }}
-        deactivate
-    - name: Build and package symmetrix
-      run: |
-        source venv/bin/activate
-        cd symmetrix
-        pip install .
-        cd ..
-        deactivate
+        uv venv
+        source .venv/bin/activate
+        uv pip install ${{ matrix.mace-torch }} ./symmetrix
     - name: Test model extraction
       run: |
-        source venv/bin/activate
-        pip install mace-torch
+        source .venv/bin/activate
         # check for valid symmetrix json from atomic numbers and default filename
         wget https://github.com/ACEsuit/mace-off/raw/refs/heads/main/mace_off23/MACE-OFF23_small.model 
         symmetrix_extract_mace --model MACE-OFF23_small.model --atomic-numbers 1 8
@@ -135,4 +125,3 @@ jobs:
         wget https://github.com/ACEsuit/mace-off/raw/refs/heads/main/mace_off23/MACE-OFF23_medium.model 
         symmetrix_extract_mace --model MACE-OFF23_medium.model --chemical-symbols H O -o extract_test.json
         python3 -c "from symmetrix import Symmetrix; calc = Symmetrix('extract_test.json', species=[1, 8])"
-        deactivate

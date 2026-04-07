@@ -12,6 +12,20 @@ wheel.packages = ["src/symmetrix"]
 name = "symmetrix"
 version = "0.0.1"
 description = "Symmetrix — a package for functions equivariant under: translation, rotation, inversion, and exchange of particles."
+dependencies = [
+    "numpy",
+    "scipy",
+    "ase",
+]
+
+[project.optional-dependencies]
+mace = [
+    "torch",
+    "mace-torch",
+]
+test = [
+    "pytest",
+]
 
 [project.scripts]
 symmetrix_extract_mace = "symmetrix.mace.cli:main"

@@ -78,7 +78,6 @@ jobs:
         ./install.sh ../lammps
         cd ../lammps
         cmake \
-            -G Ninja \
             -B build \
             -D CMAKE_BUILD_TYPE=Release \
             -D CMAKE_CXX_STANDARD=20 \
@@ -93,7 +92,9 @@ jobs:
             -D SYMMETRIX_KOKKOS=ON \
             cmake
         cmake --build build -j 2
-        cmake --build build --target install-python
+        cd build
+        make install-python
+        cd ../../..
     - name: Run tests
       run: |
         source .venv/bin/activate

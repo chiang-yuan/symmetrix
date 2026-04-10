@@ -35,7 +35,7 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
     -------
     output_data: dict with symmetrix model data
     """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
     model = torch.load(
         model,
         map_location=device,

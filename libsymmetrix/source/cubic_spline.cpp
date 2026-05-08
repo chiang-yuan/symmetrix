@@ -23,7 +23,7 @@ int CubicSpline::get_i(double r)
 
 double CubicSpline::evaluate(double r)
 {
-    const int i = get_i(r)
+    const int i = get_i(r);
     const double x = r - h*i;
     const double xx = x*x;
     const double xxx = xx*x;
@@ -34,7 +34,7 @@ double CubicSpline::evaluate(double r)
 
 std::tuple<double,double> CubicSpline::evaluate_deriv(double r)
 {
-    const int i = get_i(r)
+    const int i = get_i(r);
     const double x = r - h*i;
     const double xx = x*x;
     const double xxx = xx*x;
@@ -45,7 +45,7 @@ std::tuple<double,double> CubicSpline::evaluate_deriv(double r)
 
 std::tuple<double,double> CubicSpline::evaluate_deriv_divided(double r)
 {
-    const int i = get_i(r)
+    const int i = get_i(r);
     const double x = r - h*i;
     const double xx = x*x;
     const double xxx = xx*x;

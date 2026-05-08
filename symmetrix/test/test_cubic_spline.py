@@ -28,7 +28,7 @@ def test_evaluate():
     for r in [-1.0, 5.0, 9.0]:
         with raises(ValueError) as exception:
             spl.evaluate(r)
-        assert str(exception.value) == "Out of bounds in CubicSpline::evaluate."
+        assert str(exception.value).startswith("Out of bounds in CubicSpline::evaluate.")
 
 
 def test_evaluate_deriv():
@@ -50,6 +50,11 @@ def test_evaluate_deriv():
     assert f2 == approx(scipy_spl(r2))
     assert d2 == approx(scipy_spl.derivative()(r2))
 
+    for r in [-1.0, 5.0, 9.0]:
+        with raises(ValueError) as exception:
+            _ = spl.evaluate_deriv(r)
+        assert str(exception.value).startswith("Out of bounds in CubicSpline::evaluate.")
+
 def test_evaluate_deriv_divided():
 
     # generate data
@@ -68,3 +73,8 @@ def test_evaluate_deriv_divided():
         f2[i], d2[i] = spl.evaluate_deriv_divided(ri)
     assert f2 == approx(scipy_spl(r2))
     assert d2 == approx(scipy_spl.derivative()(r2) / r2)
+
+    for r in [-1.0, 5.0, 9.0]:
+        with raises(ValueError) as exception:
+            _ = spl.evaluate_deriv(r)
+        assert str(exception.value).startswith("Out of bounds in CubicSpline::evaluate.")

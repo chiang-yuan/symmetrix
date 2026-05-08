@@ -1,5 +1,7 @@
 #include <stdexcept>
 #include <vector>
+#include <string>
+#include <algorithm>
 
 #include "cubic_spline.hpp"
 
@@ -12,12 +14,16 @@ CubicSpline::CubicSpline(
 {
 }
 
+int CubicSpline::get_i(double r)
+{
+    if (r<0 or r>h*c.size()/4)
+        throw std::invalid_argument("Out of bounds in CubicSpline::evaluate. r=" + std::to_string(r));
+    return std::clamp(static_cast<int>(r / h), 0, c.size()/4 - 1);
+}
+
 double CubicSpline::evaluate(double r)
 {
-    const int i = static_cast<int>(r / h);
-    // TODO: something better with this bounds checking
-    if (i<0 or i>=c.size()/4)
-        throw std::invalid_argument("Out of bounds in CubicSpline::evaluate.");
+    const int i = get_i(r)
     const double x = r - h*i;
     const double xx = x*x;
     const double xxx = xx*x;
@@ -28,10 +34,7 @@ double CubicSpline::evaluate(double r)
 
 std::tuple<double,double> CubicSpline::evaluate_deriv(double r)
 {
-    const int i = static_cast<int>(r / h);
-    // TODO: something better with this bounds checking
-    if (i<0 or i>=c.size()/4)
-        throw std::invalid_argument("Out of bounds in CubicSpline::evaluate_deriv.");
+    const int i = get_i(r)
     const double x = r - h*i;
     const double xx = x*x;
     const double xxx = xx*x;
@@ -42,10 +45,7 @@ std::tuple<double,double> CubicSpline::evaluate_deriv(double r)
 
 std::tuple<double,double> CubicSpline::evaluate_deriv_divided(double r)
 {
-    const int i = static_cast<int>(r / h);
-    // TODO: something better with this bounds checking
-    if (i<0 or i>=c.size()/4)
-        throw std::invalid_argument("Out of bounds in CubicSpline::evaluate_deriv.");
+    const int i = get_i(r)
     const double x = r - h*i;
     const double xx = x*x;
     const double xxx = xx*x;

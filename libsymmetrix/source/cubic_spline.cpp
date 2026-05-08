@@ -16,9 +16,9 @@ CubicSpline::CubicSpline(
 
 int CubicSpline::get_i(double r)
 {
-    if (r<0 or r>h*c.size()/4)
+    if (r<0 or r>=h*c.size()/4)
         throw std::invalid_argument("Out of bounds in CubicSpline::evaluate. r=" + std::to_string(r));
-    return std::clamp(static_cast<int>(r / h), 0, c.size()/4 - 1);
+    return std::clamp(static_cast<int>(r / h), 0, static_cast<int>(c.size()/4 - 1));
 }
 
 double CubicSpline::evaluate(double r)

@@ -276,12 +276,9 @@ void MACEKokkos<Precision>::compute_Y(Kokkos::View<const double*> xyz) {
 
     // call sphericart
 #if defined (SYMMETRIX_SPHERICART_CUDA)
-#error "here 2"
     sphericart::cuda::SphericalHarmonics<Precision> sphericart(l_max);
 #elif defined (SYMMETRIX_SPHERICART_SYCL)
     sphericart::sycl::SphericalHarmonics<Precision> sphericart(l_max);
-#else 
-#error "NO GPU defined"
 #endif
     sphericart.compute_with_gradients(xyz_shuffled.data(), num, Y.data(), Y_grad.data());
 

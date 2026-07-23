@@ -20,8 +20,6 @@ private:
 double h;
 std::vector<double> c;
 
-auto get_i(double r) -> int;
-
 auto generate_coefficients(
     double h,
     std::vector<double> nodal_values,

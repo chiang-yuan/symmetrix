@@ -10,6 +10,17 @@ import symmetrix
 if not symmetrix._kokkos_is_initialized():
     symmetrix._init_kokkos()
 
+
+def test_invalid_input():
+    for h in [0.0, -1.0, np.inf, np.nan]:
+        with raises(ValueError):
+            symmetrix.CubicSplineKokkos(h, [0.0, 1.0], [0.0, 1.0])
+
+    for values, derivs in [([], []), ([0.0], [0.0]), ([0.0, 1.0], [0.0])]:
+        with raises(ValueError):
+            symmetrix.CubicSplineKokkos(1.0, values, derivs)
+
+
 def test_evaluate():
 
     # generate data

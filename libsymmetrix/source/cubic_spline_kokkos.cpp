@@ -9,8 +9,13 @@ CubicSplineKokkos::CubicSplineKokkos(
     double h,
     std::vector<double> nodal_values,
     std::vector<double> nodal_derivs)
-    : h(h), num_coeffs(4*(nodal_values.size() - 1))
+    : h(h)
 {
+    if (h<=0 or not std::isfinite(h))
+        throw std::invalid_argument("CubicSplineKokkos requires positive finite spacing.");
+    if (nodal_values.size()<2 or nodal_values.size()!=nodal_derivs.size())
+        throw std::invalid_argument("CubicSplineKokkos requires at least two values and matching derivatives.");
+    num_coeffs = 4*(nodal_values.size() - 1);
     c = Kokkos::View<double*>("coeffs",num_coeffs);
     generate_coefficients(h, nodal_values, nodal_derivs);
 }
@@ -19,8 +24,13 @@ CubicSplineKokkos::CubicSplineKokkos(
     double h,
     Kokkos::View<double*> nodal_values,
     Kokkos::View<double*> nodal_derivs)
-    : h(h), num_coeffs(4*(nodal_values.size() - 1))
+    : h(h)
 {
+    if (h<=0 or not std::isfinite(h))
+        throw std::invalid_argument("CubicSplineKokkos requires positive finite spacing.");
+    if (nodal_values.size()<2 or nodal_values.size()!=nodal_derivs.size())
+        throw std::invalid_argument("CubicSplineKokkos requires at least two values and matching derivatives.");
+    num_coeffs = 4*(nodal_values.size() - 1);
     c = Kokkos::View<double*>("coeffs",num_coeffs);
     generate_coefficients(h, nodal_values, nodal_derivs);
 }

@@ -35,11 +35,13 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
     -------
     output_data: dict with symmetrix model data
     """
+    device = torch.device("cpu")
     model = torch.load(
         model,
-        map_location=torch.device('cpu'),
+        map_location=device,
         weights_only=False
-    ).to(torch.float64)
+    ).to(device=device, dtype=torch.float64)
+    model.eval()
 
     if species is None:
         species = []
@@ -63,7 +65,8 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
 
     if hasattr(model, 'heads') and len(model.heads) != 1:
         torch.set_default_dtype(next(model.parameters()).dtype)
-        model = remove_pt_head(model, head)
+        model = remove_pt_head(model, head).to(device=device, dtype=torch.float64)
+        model.eval()
 
     ### ----- CHECK FOR COMPATIBILITY -----
 
@@ -96,7 +99,7 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
                             Irreps(linear.irreps_out).simplify())
         simplified.weight = linear.weight
         simplified.bias = linear.bias
-        return simplified
+        return simplified.to(device=device, dtype=torch.float64)
 
     ### ----- BASIC MODEL INFO -----
 
@@ -154,10 +157,10 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
             model_i = model.atomic_numbers.tolist().index(a_i)
             model_j = model.atomic_numbers.tolist().index(a_j)
             bessels = model.radial_embedding(
-                torch.tensor(r, dtype=torch.get_default_dtype()).unsqueeze(-1),
-                torch.eye(len(model.atomic_numbers)),
-                torch.tensor([[model_i],[model_j]], dtype=torch.int64),
-                model.atomic_numbers)
+                torch.tensor(r, dtype=torch.get_default_dtype(), device=device).unsqueeze(-1),
+                torch.eye(len(model.atomic_numbers), device=device),
+                torch.tensor([[model_i],[model_j]], dtype=torch.int64, device=device),
+                model.atomic_numbers.to(device))
             if isinstance(bessels, tuple):
                 bessels = bessels[0]  # newer versions return (bessels, cutoffs)
             # radial basis for interaction 0
@@ -211,10 +214,10 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
                 model_i = model.atomic_numbers.tolist().index(a_i)
                 model_j = model.atomic_numbers.tolist().index(a_j)
                 bessels = model.radial_embedding(
-                    torch.tensor(r, dtype=torch.get_default_dtype()).unsqueeze(-1),
-                    torch.eye(len(model.atomic_numbers)),
-                    torch.tensor([[model_i],[model_j]], dtype=torch.int64),
-                    model.atomic_numbers)
+                    torch.tensor(r, dtype=torch.get_default_dtype(), device=device).unsqueeze(-1),
+                    torch.eye(len(model.atomic_numbers), device=device),
+                    torch.tensor([[model_i],[model_j]], dtype=torch.int64, device=device),
+                    model.atomic_numbers.to(device))
                 if isinstance(bessels, tuple):
                     bessels = bessels[0]  # newer versions return (bessels, cutoffs)
                 R = torch.tanh(model.interactions[0].density_fn(bessels)**2).numpy(force=True)
@@ -347,16 +350,16 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
             lelm1lm2 += (2*l1+1)*(2*l2+1)
         l, l1, l2 = (Phi1_l[le], Phi1_l1[le], Phi1_l2[le])
         return lelm1lm2 + (l1+m1)*(2*l2+1) + l2+m2
-    tp = model.interactions[1].conv_tp
+    tp = model.interactions[1].conv_tp.to(device)
     for l1 in range(l_max+1):
         for m1 in range(-l1,l1+1):
             lm1 = l1*l1+l1+m1
             for l2 in range(L_max+1):
                 for m2 in range(-l2,l2+1):
-                    R = torch.ones([1,len(tp.instructions)*num_channels],dtype=torch.double)
-                    Y = torch.zeros([1,num_lm1], dtype=torch.double)
+                    R = torch.ones([1,len(tp.instructions)*num_channels],dtype=torch.double, device=device)
+                    Y = torch.zeros([1,num_lm1], dtype=torch.double, device=device)
                     Y[0,lm1] = 1.0
-                    H = torch.zeros([1,num_lm2*num_channels],dtype=torch.double)
+                    H = torch.zeros([1,num_lm2*num_channels],dtype=torch.double, device=device)
                     H[0,sum([2*p+1 for p in range(l2)])*num_channels+l2+m2] = 1.0
                     Phi = tp(H, Y, R)
                     # extract Phi values for k=0
@@ -396,10 +399,10 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
                 model_i = model.atomic_numbers.tolist().index(a_i)
                 model_j = model.atomic_numbers.tolist().index(a_j)
                 bessels = model.radial_embedding(
-                    torch.tensor(r, dtype=torch.get_default_dtype()).unsqueeze(-1),
-                    torch.eye(len(model.atomic_numbers)),
-                    torch.tensor([[model_i],[model_j]], dtype=torch.int64),
-                    model.atomic_numbers)
+                    torch.tensor(r, dtype=torch.get_default_dtype(), device=device).unsqueeze(-1),
+                    torch.eye(len(model.atomic_numbers), device=device),
+                    torch.tensor([[model_i],[model_j]], dtype=torch.int64, device=device),
+                    model.atomic_numbers.to(device))
                 if isinstance(bessels, tuple):
                     bessels = bessels[0]  # newer versions return (bessels, cutoffs)
                 R = torch.tanh(model.interactions[1].density_fn(bessels)**2).numpy(force=True)

@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <cmath>
 
 #include "cubic_spline.hpp"
 
@@ -16,7 +17,7 @@ CubicSpline::CubicSpline(
 
 double CubicSpline::evaluate(double r)
 {
-    if (r<0 or r>h*c.size()/4)
+    if (r<0 or r>h*c.size()/4 or std::isnan(r))
         throw std::invalid_argument("Out of bounds in CubicSpline::evaluate. r=" + std::to_string(r));
     const int i = std::clamp(static_cast<int>(r / h), 0, static_cast<int>(c.size()/4 - 1));
     const double x = r - h*i;
@@ -29,7 +30,7 @@ double CubicSpline::evaluate(double r)
 
 std::tuple<double,double> CubicSpline::evaluate_deriv(double r)
 {
-    if (r<0 or r>h*c.size()/4)
+    if (r<0 or r>h*c.size()/4 or std::isnan(r))
         throw std::invalid_argument("Out of bounds in CubicSpline::evaluate_deriv. r=" + std::to_string(r));
     const int i = std::clamp(static_cast<int>(r / h), 0, static_cast<int>(c.size()/4 - 1));
     const double x = r - h*i;
@@ -42,7 +43,7 @@ std::tuple<double,double> CubicSpline::evaluate_deriv(double r)
 
 std::tuple<double,double> CubicSpline::evaluate_deriv_divided(double r)
 {
-    if (r<0 or r>h*c.size()/4)
+    if (r<0 or r>h*c.size()/4 or std::isnan(r))
         throw std::invalid_argument("Out of bounds in CubicSpline::evaluate_deriv_divided. r=" + std::to_string(r));
     const int i = std::clamp(static_cast<int>(r / h), 0, static_cast<int>(c.size()/4 - 1));
     const double x = r - h*i;

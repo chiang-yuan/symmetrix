@@ -60,6 +60,11 @@ auto CubicSpline::generate_coefficients(
     std::vector<double> nodal_derivs)
     -> std::vector<double>
 {
+    if (h<=0 or not std::isfinite(h))
+        throw std::invalid_argument("CubicSpline requires positive finite spacing.");
+    if (nodal_values.size()<2 or nodal_values.size()!=nodal_derivs.size())
+        throw std::invalid_argument("CubicSpline requires at least two values and matching derivatives.");
+
     auto c = std::vector<double>(4*(nodal_values.size()-1), 0.0);
     for (int i=0; i<nodal_values.size()-1; ++i) {
         c[4*i] = nodal_values[i];

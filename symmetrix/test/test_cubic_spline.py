@@ -7,6 +7,16 @@ import sys
 import symmetrix
 
 
+def test_invalid_input():
+    for h in [0.0, -1.0, np.inf, np.nan]:
+        with raises(ValueError):
+            symmetrix.CubicSpline(h, [0.0, 1.0], [0.0, 1.0])
+
+    for values, derivs in [([], []), ([0.0], [0.0]), ([0.0, 1.0], [0.0])]:
+        with raises(ValueError):
+            symmetrix.CubicSpline(1.0, values, derivs)
+
+
 def test_evaluate():
 
     # generate data

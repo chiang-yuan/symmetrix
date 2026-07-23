@@ -83,7 +83,7 @@ def test_evaluate_deriv_divided():
     assert f2 == approx(scipy_spl(r2))
     assert d2 == approx(scipy_spl.derivative()(r2) / r2)
 
-    for r in [-np.inf, -1.0, r_cut + 1e-12, 9.0, np.inf, np.nan]:
+    for r in [-np.inf, -1.0, 0.0, r_cut + 1e-12, 9.0, np.inf, np.nan]:
         with raises(ValueError) as exception:
             _ = spl.evaluate_deriv_divided(r)
         assert str(exception.value).startswith("Out of bounds in CubicSpline::evaluate_deriv_divided.")

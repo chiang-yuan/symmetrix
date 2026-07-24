@@ -10,6 +10,17 @@ import symmetrix
 if not symmetrix._kokkos_is_initialized():
     symmetrix._init_kokkos()
 
+
+def test_invalid_input():
+    for h in [0.0, -1.0]:
+        with raises(ValueError):
+            symmetrix.CubicSplineKokkos(h, [0.0, 1.0], [0.0, 1.0])
+
+    for values, derivs in [([], []), ([0.0], [0.0]), ([0.0, 1.0], [0.0])]:
+        with raises(ValueError):
+            symmetrix.CubicSplineKokkos(1.0, values, derivs)
+
+
 def test_evaluate():
 
     # generate data
@@ -21,17 +32,16 @@ def test_evaluate():
     d = scipy_spl.derivative()(r)
     spl = symmetrix.CubicSplineKokkos(h, f, d)
     # test equivalence
-    # NOTE: endpoint=False avoids out of bounds (see exception tests below)
-    r2 = np.linspace(0, r_cut, 1000, endpoint=False)
+    r2 = np.linspace(0, r_cut, 1000)
     f2 = np.zeros(len(r2))
     for i, ri in enumerate(r2):
         f2[i] = spl.evaluate(ri)
     assert f2 == approx(scipy_spl(r2))
     # test out of bounds errors
-    for r in [-1.0, 5.0, 9.0]:
+    for r in [-1.0, r_cut + 1e-12, 9.0]:
         with raises(ValueError) as exception:
             spl.evaluate(r)
-        assert str(exception.value) == "Out of bounds in CubicSplineKokkos::evaluate."
+        assert str(exception.value).startswith("Out of bounds in CubicSplineKokkos::evaluate.")
 
 def test_evaluate_deriv():
 
@@ -44,13 +54,18 @@ def test_evaluate_deriv():
     d = scipy_spl.derivative()(r)
     spl = symmetrix.CubicSplineKokkos(h, f, d)
     # test equivalence
-    r2 = np.linspace(0, r_cut, 1000, endpoint=False)
+    r2 = np.linspace(0, r_cut, 1000)
     f2 = np.zeros(len(r2))
     d2 = np.zeros(len(r2))
     for i, ri in enumerate(r2):
         f2[i], d2[i] = spl.evaluate_deriv(ri)
     assert f2 == approx(scipy_spl(r2))
     assert d2 == approx(scipy_spl.derivative()(r2))
+
+    for r in [-1.0, r_cut + 1e-12, 9.0]:
+        with raises(ValueError) as exception:
+            _ = spl.evaluate_deriv(r)
+        assert str(exception.value).startswith("Out of bounds in CubicSplineKokkos::evaluate_deriv.")
 
 def test_evaluate_deriv_divided():
 
@@ -63,10 +78,15 @@ def test_evaluate_deriv_divided():
     d = scipy_spl.derivative()(r)
     spl = symmetrix.CubicSplineKokkos(h, f, d)
     # test equivalence
-    r2 = np.linspace(1e-6, r_cut, 1000, endpoint=False)
+    r2 = np.linspace(1e-6, r_cut, 1000)
     f2 = np.zeros(len(r2))
     d2 = np.zeros(len(r2))
     for i, ri in enumerate(r2):
         f2[i], d2[i] = spl.evaluate_deriv_divided(ri)
     assert f2 == approx(scipy_spl(r2))
     assert d2 == approx(scipy_spl.derivative()(r2) / r2)
+
+    for r in [-1.0, 0.0, r_cut + 1e-12, 9.0]:
+        with raises(ValueError) as exception:
+            _ = spl.evaluate_deriv_divided(r)
+        assert str(exception.value).startswith("Out of bounds in CubicSplineKokkos::evaluate_deriv_divided.")

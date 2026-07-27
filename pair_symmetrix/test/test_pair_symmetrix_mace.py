@@ -67,7 +67,7 @@ def test_h20(cmdargs, pair_style):
         create_atoms    2 single  0.0 -2.0  0.0 units box
         mass            1 1.008
         mass            2 15.999
-    
+
         pair_style      {}
         pair_coeff      * * MACE-OFF23_small-1-8.json H O
 

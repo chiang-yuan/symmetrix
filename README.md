@@ -25,6 +25,8 @@ source .venv/bin/activate
 uv pip install -e "./symmetrix[test]"
 ```
 
+Run Python formatting and lint checks with `uvx pre-commit run --all-files`.
+
 ### Citing Symmetrix
 
 The earliest `symmetrix` results are reported in:

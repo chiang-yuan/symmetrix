@@ -20,7 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 mace = [
-    "torch",
+    "torch>=2.5",
     "mace-torch",
 ]
 test = [

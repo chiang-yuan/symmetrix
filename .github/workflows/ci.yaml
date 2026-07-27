@@ -101,7 +101,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mace-torch: ["mace-torch==0.3.10", "mace-torch"]
+        include:
+        - mace-torch: "mace-torch==0.3.10"
+          torch: "torch==2.5.*"
+        - mace-torch: "mace-torch"
+          torch: "torch"
     steps:
     - name: Clone repo
       uses: actions/checkout@v6
@@ -119,7 +123,7 @@ jobs:
       run: |
         uv venv --clear
         source .venv/bin/activate
-        uv pip install ${{ matrix.mace-torch }} ./symmetrix
+        uv pip install "${{ matrix.torch }}" "${{ matrix.mace-torch }}" "./symmetrix[mace]"
         deactivate
     - name: Test model extraction
       run: |

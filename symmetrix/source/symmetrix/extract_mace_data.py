@@ -6,7 +6,8 @@ import itertools
 import numpy as np
 from scipy.interpolate import CubicSpline
 
-from e3nn.o3 import Irreps, Linear
+with torch.serialization.safe_globals([slice]):
+    from e3nn.o3 import Irreps, Linear
 from mace.modules.radial import ZBLBasis
 from mace.tools.cg import U_matrix_real
 from mace.tools.scripts_utils import remove_pt_head

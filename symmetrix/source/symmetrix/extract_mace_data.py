@@ -1,5 +1,4 @@
 import torch
-torch.serialization.add_safe_globals([slice])
 
 import os
 import logging
@@ -55,7 +54,7 @@ def extract_mace_data(model, species, head=None, num_spline_points=256):
             try:
                 Z = chemical_symbols.index(sp)
             except ValueError as exc:
-                raise ValueError("Failed to parse {sp} as atomic number or chemical species") from exc
+                raise ValueError(f"Failed to parse {sp} as atomic number or chemical species") from exc
         atomic_numbers.append(Z)
 
     # ensure that splines goes smoothly to 0 at outer cutoff

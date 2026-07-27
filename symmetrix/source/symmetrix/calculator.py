@@ -11,7 +11,7 @@ import numpy as np
 
 try:
     from matscipy.neighbours import neighbour_list as neighbor_list
-except:
+except ImportError:
     logging.warning("Symmetrix using slow ase.neighborlist.neighbor_list")
     from ase.neighborlist import neighbor_list
 
